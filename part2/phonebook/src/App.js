@@ -23,11 +23,25 @@ const App = () => {
     person.name.toLowerCase().includes(filter.toLowerCase())
   )
 
+  function handleUpdate(person) {
+    const message = `${person.name} is already added to phonebook, replace the old number with a new one?`
+      if (window.confirm(message)) {
+        personService
+          .update(person.id, { ...person, number: newNumber })
+          .then(returnedPerson => {
+            setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+          })
+        setNewName('')
+        setNewNumber('')
+      }
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+    const existingPerson = persons.find((person) => person.name == newName)
+    if (existingPerson) {
+      handleUpdate(existingPerson)
       return
     }
 
