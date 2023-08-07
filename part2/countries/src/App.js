@@ -18,24 +18,6 @@ const CountryData = ({ country }) => {
   )
 }
 
-const SearchResult = ({ result }) => {
-  if (result.length > 10) {
-    return <div>Too many matches, spesify another filter</div>
-  }
-
-  if (result.length > 1) {
-    return result.map(country => (
-      <div key={country.cca2}>{country.name.common}</div>)
-    )
-  }
-
-  if (result.length === 1) {
-    return <CountryData country={result[0]} />
-  }
-
-  return <div>No matches</div>
-}
-
 const App = () => {
   const [allCountries, setAllCountries] = useState([])
   const [matchingCountries, setMatchingCountries] = useState([])
@@ -54,13 +36,38 @@ const App = () => {
     setMatchingCountries(filteredCountries)
   }
 
+  const handleClick = (country) => {
+    setMatchingCountries([country])
+  }
+
+  let searchResult
+
+  if (matchingCountries.length > 10) {
+    searchResult = <div>Too many matches, spesify another filter</div>
+  } else if (matchingCountries.length > 1) {
+    searchResult = (
+      <div>
+        {matchingCountries.map(country =>
+          <div key={country.name.common}>
+            {country.name.common}
+            <button onClick={() => handleClick(country)}>show</button>
+          </div>
+        )}
+      </div>
+    )
+  } else if (matchingCountries.length === 1) {
+    searchResult = <CountryData country={matchingCountries[0]} />
+  } else {
+    searchResult = <div>No matches</div>
+  }
+
   return (
     <>
       <div>
         Find countries:
         <input onChange={handleChange} />
       </div>
-      <SearchResult result={matchingCountries} />
+      {searchResult}
     </>
   )
 }
